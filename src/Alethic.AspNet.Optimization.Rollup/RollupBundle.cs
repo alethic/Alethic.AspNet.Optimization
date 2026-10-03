@@ -17,8 +17,9 @@ namespace Alethic.AspNet.Optimization.Rollup;
 /// pointing at the wrong places.
 /// </para>
 /// <para>
-/// Whether the output is minified and carries a source map follows <see cref="BundleTable.EnableOptimizations"/>
-/// unless <see cref="Minify"/> and <see cref="SourceMap"/> say otherwise.
+/// What a bundle targets, and whether it is minified and carries a source map, is its own <see cref="Targets"/>,
+/// <see cref="Minify"/> and <see cref="SourceMap"/>, or else the site's <see cref="RollupSection"/>, or else follows
+/// <see cref="BundleTable.EnableOptimizations"/>.
 /// </para>
 /// </remarks>
 public abstract class RollupBundle : Bundle
@@ -40,13 +41,26 @@ public abstract class RollupBundle : Bundle
     internal abstract BundleKind Kind { get; }
 
     /// <summary>
-    /// Whether to minify the bundle; <see langword="null"/>, the default, to minify where optimizations are enabled.
+    /// The browsers to build the bundle for, as a browserslist query: newer script syntax is rewritten by SWC, and
+    /// stylesheets are lowered and prefixed by Lightning CSS, for those browsers. <see langword="null"/>, the default,
+    /// to take the <see cref="RollupSection"/>'s, and where it sets none, to keep the language level of the sources.
+    /// </summary>
+    /// <remarks>
+    /// Syntax is rewritten; built-in objects and methods the browsers lack are not added. The helpers rewritten syntax
+    /// needs are inlined in the bundle, so in a <see cref="RollupScriptBundle"/>, whose top-level names are globals,
+    /// they are globals too.
+    /// </remarks>
+    public string? Targets { get; set; }
+
+    /// <summary>
+    /// Whether to minify the bundle; <see langword="null"/>, the default, to take the <see cref="RollupSection"/>'s, and
+    /// where it sets none, to minify where optimizations are enabled.
     /// </summary>
     public bool? Minify { get; set; }
 
     /// <summary>
-    /// Whether to append the bundle's source map to it, inline; <see langword="null"/>, the default, to do so where
-    /// optimizations are disabled.
+    /// Whether to append the bundle's source map to it, inline; <see langword="null"/>, the default, to take the
+    /// <see cref="RollupSection"/>'s, and where it sets none, to do so where optimizations are disabled.
     /// </summary>
     public bool? SourceMap { get; set; }
 

@@ -1,6 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { transform } from 'lightningcss-wasm';
+import browserslist from 'browserslist';
+import { browserslistToTargets, transform } from 'lightningcss-wasm';
 import * as sass from 'sass';
 
 const entryId = '\0alethic:styles';
@@ -20,9 +21,10 @@ const sassExtensions = /\.s[ac]ss$/;
  * @param {string} options.fileName the asset's file name
  * @param {boolean} options.minify whether to minify the stylesheet
  * @param {boolean} options.sourceMap whether to emit the asset's source map beside it, as `fileName.map`
+ * @param {string} [options.targets] the browsers to build for, as a browserslist query
  * @param {string[]} options.warnings where to add warnings
  */
-export function styles(input, files, { fileName, minify, sourceMap, warnings }) {
+export function styles(input, files, { fileName, minify, sourceMap, targets, warnings }) {
     return {
         name: 'alethic:styles',
 
@@ -42,6 +44,7 @@ export function styles(input, files, { fileName, minify, sourceMap, warnings }) 
                 minify,
                 sourceMap,
                 inputSourceMap: compiled.map ? JSON.stringify(compiled.map) : undefined,
+                targets: targets ? browserslistToTargets(browserslist(targets)) : undefined,
                 // stylesheets written for old browsers carry hacks Lightning CSS cannot parse; keep them as written
                 errorRecovery: true,
             });

@@ -70,6 +70,7 @@ sealed class Toolchain
                 ["minify"] = request.Minify,
                 ["sourceMap"] = request.SourceMap,
                 ["separator"] = request.Separator,
+                ["targets"] = request.Targets is string targets ? targets : JSValue.Undefined,
                 ["files"] = new JSObject
                 {
                     ["exists"] = new JSFunction(path => request.Files.Exists((string)path)),

@@ -28,7 +28,7 @@ public static void RegisterBundles(BundleCollection bundles)
 
 - **Every bundle is one Rollup build.** Rollup reads the bundle's files, runs each through its transform plugins, and
   renders the output.
-  - TypeScript has its types stripped by SWC. Type checking stays with the compiler, in the editor and the build.
+  - TypeScript is compiled by SWC. Type checking stays with the compiler, in the editor and the build.
   - Scripts and modules are minified by Terser.
   - Stylesheets are compiled by Sass, then transformed and minified by Lightning CSS.
 - **Classic scripts stay classic.** A `RollupScriptBundle` joins its files in order into one scope, so a top-level
@@ -40,11 +40,28 @@ public static void RegisterBundles(BundleCollection bundles)
   ordering, item transforms and CDN paths all work as for any bundle. Files are read through the bundle's
   `BundleFile`s and the site's virtual path provider. A bundle's `Transforms` start empty, for the site's own, which
   run on the built content.
+- **Browser targets.** Set `Targets` to a browserslist query, such as `defaults`, and SWC rewrites newer script
+  syntax, and Lightning CSS lowers and prefixes stylesheets, for those browsers. Built-ins the browsers lack are not
+  added. Without targets, the output keeps the language level of the sources.
 - **Source maps.** Set `SourceMap = true`, or leave it to follow optimizations, to append an inline source map that
   shows the browser's tools each file as it was written, TypeScript and Sass included.
 
 Where optimizations are disabled, System.Web.Optimization renders a bundle as a tag per file. TypeScript and Sass files
 cannot yet be served on their own, so a bundle that includes them needs optimizations enabled.
+
+## Site-wide settings
+
+What every bundle does that does not say otherwise comes from the `alethic.optimization.rollup` section of
+`web.config`. A bundle's own `Targets`, `Minify` and `SourceMap` win over it; where neither sets one, a bundle is
+minified, and carries no source map, where optimizations are enabled, and the reverse where they are not.
+
+```xml
+<configSections>
+  <section name="alethic.optimization.rollup" type="Alethic.AspNet.Optimization.Rollup.RollupSection, Alethic.AspNet.Optimization.Rollup" />
+</configSections>
+
+<alethic.optimization.rollup targets="defaults" minify="true" sourceMap="false" />
+```
 
 ## Requirements
 

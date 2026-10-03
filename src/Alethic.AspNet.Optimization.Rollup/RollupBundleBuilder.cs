@@ -95,8 +95,9 @@ sealed class RollupBundleBuilder : IBundleBuilder
             throw new ArgumentException($"The bundle '{bundle.Path}' is not a {nameof(RollupBundle)}.", nameof(bundle));
 
         var included = files.ToList();
-        var minify = rollup.Minify ?? (context.EnableOptimizations && context.EnableInstrumentation == false);
-        var sourceMap = rollup.SourceMap ?? context.EnableOptimizations == false;
+        var section = RollupSection.Current();
+        var minify = rollup.Minify ?? section.MinifyValue ?? (context.EnableOptimizations && context.EnableInstrumentation == false);
+        var sourceMap = rollup.SourceMap ?? section.SourceMapValue ?? context.EnableOptimizations == false;
 
         // the inputs are named by the paths their virtual paths map to, and read through System.Web.Optimization
         var inputs = included.Select(f => AppPaths.ToPhysical(f.IncludedVirtualPath)).ToList();
@@ -105,6 +106,7 @@ sealed class RollupBundleBuilder : IBundleBuilder
             Minify = minify,
             SourceMap = sourceMap,
             Separator = Separator(rollup),
+            Targets = rollup.Targets ?? section.TargetsValue,
         };
 
         // off the request's thread, whose synchronization context the build's continuations must not wait for

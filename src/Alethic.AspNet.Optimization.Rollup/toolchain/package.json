@@ -8,7 +8,8 @@
   "dependencies": {
     "@jridgewell/sourcemap-codec": "1.6.0",
     "@rollup/wasm-node": "4.64.0",
-    "@swc/wasm-typescript": "1.16.13",
+    "@swc/wasm": "1.16.13",
+    "browserslist": "4.29.3",
     "immutable": "5.1.9",
     "lightningcss-wasm": "1.33.0",
     "magic-string": "1.4.2",

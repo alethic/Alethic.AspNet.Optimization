@@ -11,6 +11,7 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 const wasm = [
     'node_modules/@rollup/wasm-node/dist/wasm-node/bindings_wasm_bg.wasm',
     'node_modules/lightningcss-wasm/lightningcss_node.wasm',
+    'node_modules/@swc/wasm/wasm_bg.wasm',
 ];
 
 export default {

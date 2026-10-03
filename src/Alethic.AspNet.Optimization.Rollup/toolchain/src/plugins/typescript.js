@@ -1,10 +1,10 @@
-import { transformSync } from '@swc/wasm-typescript';
+import { transformSync } from '@swc/wasm';
 
-const extensions = /\.[cm]?ts$/;
+const extensions = /\.[cm]?tsx?$/;
 
 /**
- * Strips TypeScript's types, leaving the JavaScript as written. Syntax that would need code generated for it, such as
- * `enum` or `namespace`, is an error; type checking is the compiler's job, not the bundler's.
+ * Compiles TypeScript to JavaScript with SWC, leaving the JavaScript at the language level it was written in; lowering
+ * it for older browsers is the downlevel plugin's. Type checking is the compiler's job, not the bundler's.
  */
 export function typescript() {
     return {
@@ -14,7 +14,16 @@ export function typescript() {
             if (!extensions.test(id) || id.endsWith('.d.ts'))
                 return null;
 
-            const result = transformSync(code, { filename: id, mode: 'strip-only', sourceMap: true });
+            const result = transformSync(code, {
+                filename: id,
+                isModule: 'unknown',
+                sourceMaps: true,
+                jsc: {
+                    parser: { syntax: 'typescript', tsx: id.endsWith('x') },
+                    target: 'esnext',
+                },
+            });
+
             return { code: result.code, map: result.map ?? null };
         },
     };

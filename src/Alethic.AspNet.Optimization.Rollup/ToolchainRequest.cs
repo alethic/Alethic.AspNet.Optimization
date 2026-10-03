@@ -49,6 +49,12 @@ sealed class ToolchainRequest
     public string Separator { get; set; } = ";\n";
 
     /// <summary>
+    /// The browsers to build for, as a browserslist query; <see langword="null"/> to keep the language level of the
+    /// sources.
+    /// </summary>
+    public string? Targets { get; set; }
+
+    /// <summary>
     /// Whether to minify the output.
     /// </summary>
     public bool Minify { get; set; }

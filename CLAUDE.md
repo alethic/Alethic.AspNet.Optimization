@@ -56,7 +56,7 @@ cd src/Alethic.AspNet.Optimization.Rollup/toolchain && node -e "import('./src/in
 
 - Alethic.Node loads CommonJS only, with no dynamic `import()`: `toolchain.cjs` is one static bundle.
 - The tools are the builds that need nothing native: `@rollup/wasm-node`, `lightningcss-wasm`,
-  `@swc/wasm-typescript`, `sass`, `terser`. They run on any platform libnode does.
+  `@swc/wasm`, `browserslist`, `sass`, `terser`. They run on any platform libnode does.
 - Rollup leaves modules whose id starts with `\0` out of source maps. An entry whose code is the inputs' own, as the
   classic-scripts entry's is, takes an id without it.
 - Package versions in `toolchain/package.json` are exact.

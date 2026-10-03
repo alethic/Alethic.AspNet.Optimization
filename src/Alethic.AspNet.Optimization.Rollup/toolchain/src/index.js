@@ -5,6 +5,7 @@
 import path from 'node:path';
 import { rollup } from '@rollup/wasm-node';
 import { classicScripts } from './plugins/classicScripts.js';
+import { downlevel } from './plugins/downlevel.js';
 import { hostFiles } from './plugins/hostFiles.js';
 import { minifyScript } from './plugins/minifyScript.js';
 import { styles } from './plugins/styles.js';
@@ -22,12 +23,14 @@ import { typescript } from './plugins/typescript.js';
  * @param {boolean} request.minify whether to minify the output
  * @param {boolean} request.sourceMap whether to produce a source map
  * @param {string} [request.separator] what classic scripts are joined with, ending with a line break
+ * @param {string} [request.targets] the browsers to build for, as a browserslist query; omitted, the output keeps the
+ *     language level of the sources
  * @param {{ exists(path: string): boolean, read(path: string): string | null }} request.files the host's files, through
  *     which every file is found and read, named by absolute path
  * @returns {Promise<{ code: string, map: string | null, watchFiles: string[], warnings: string[] }>}
  */
 export async function build(request) {
-    const { kind, inputs, fileName, minify = false, sourceMap = false, files, separator = ';\n' } = request;
+    const { kind, inputs, fileName, minify = false, sourceMap = false, files, separator = ';\n', targets } = request;
     const warnings = [];
 
     if ((kind === 'module' || kind === 'style') && inputs.length !== 1)
@@ -37,9 +40,12 @@ export async function build(request) {
     if (kind === 'script')
         plugins.push(classicScripts(inputs, separator));
     else if (kind === 'style')
-        plugins.push(styles(inputs[0], files, { fileName, minify, sourceMap, warnings }));
+        plugins.push(styles(inputs[0], files, { fileName, minify, sourceMap, targets, warnings }));
     else if (kind !== 'module')
         throw new Error(`Unknown bundle kind '${kind}'.`);
+
+    if (targets && kind !== 'style')
+        plugins.push(downlevel({ targets, sourceMap }));
 
     if (minify && kind !== 'style')
         plugins.push(minifyScript({ sourceMap, classic: kind === 'script' }));

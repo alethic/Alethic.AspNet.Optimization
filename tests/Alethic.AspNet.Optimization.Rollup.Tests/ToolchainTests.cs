@@ -146,6 +146,54 @@ public class ToolchainTests
     }
 
     [TestMethod]
+    [DataRow(false)]
+    [DataRow(true)]
+    public async Task Targets_rewrite_scripts_for_older_browsers(bool minify)
+    {
+        var root = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+        var files = new MemoryToolchainFiles
+        {
+            [Path.Combine(root, "counter.ts")] = "enum Start { Zero }\nclass Counter { #count: number = Start.Zero; next(): number { return ++this.#count; } }\nvar counted = new Counter().next() ?? 0;",
+        };
+
+        var result = await _toolchain!.BuildAsync(new ToolchainRequest(BundleKind.Script, [Path.Combine(root, "counter.ts")], "counter.js", files) { Targets = "ie 11", Minify = minify });
+
+        Assert.IsFalse(result.Code.Contains("class Counter"), "classes are rewritten as functions");
+        Assert.IsFalse(result.Code.Contains("??"), "nullish coalescing is rewritten");
+        Assert.AreEqual("1", await RunAndRead(result.Code, "counted"));
+    }
+
+    [TestMethod]
+    public async Task Without_targets_scripts_keep_their_language_level()
+    {
+        var root = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+        var files = new MemoryToolchainFiles
+        {
+            [Path.Combine(root, "counter.js")] = "class Counter { next() { return 1; } }\nvar counted = new Counter().next() ?? 0;",
+        };
+
+        var result = await _toolchain!.BuildAsync(new ToolchainRequest(BundleKind.Script, [Path.Combine(root, "counter.js")], "counter.js", files));
+
+        StringAssert.Contains(result.Code, "class Counter");
+        StringAssert.Contains(result.Code, "??");
+    }
+
+    [TestMethod]
+    public async Task Targets_lower_and_prefix_stylesheets()
+    {
+        var root = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+        var files = new MemoryToolchainFiles
+        {
+            [Path.Combine(root, "site.css")] = ".a { user-select: none; .b { color: red } }",
+        };
+
+        var result = await _toolchain!.BuildAsync(new ToolchainRequest(BundleKind.Style, [Path.Combine(root, "site.css")], "site.css", files) { Targets = "ie 11", Minify = true });
+
+        StringAssert.Contains(result.Code, "-ms-user-select:none");
+        StringAssert.Contains(result.Code, ".a .b{color:red}");
+    }
+
+    [TestMethod]
     public async Task A_syntax_error_fails_the_build()
     {
         var broken = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".js");
