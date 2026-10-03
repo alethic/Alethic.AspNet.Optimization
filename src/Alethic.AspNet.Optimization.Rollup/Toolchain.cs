@@ -8,13 +8,13 @@ using Alethic.Node.AspNet;
 
 using Microsoft.JavaScript.NodeApi;
 
-namespace Alethic.AspNet.Optimization;
+namespace Alethic.AspNet.Optimization.Rollup;
 
 /// <summary>
 /// Builds bundles with the JavaScript toolchain: Rollup orchestrating Sass, SWC, Terser and Lightning CSS, on a pool of
 /// Node engines.
 /// </summary>
-public sealed class Toolchain
+sealed class Toolchain
 {
 
     static readonly Lazy<Toolchain> _default = new(() => new Toolchain(AspNetNode.Pool, NodeModuleSource.FromFile(ToolchainLocator.Locate())));

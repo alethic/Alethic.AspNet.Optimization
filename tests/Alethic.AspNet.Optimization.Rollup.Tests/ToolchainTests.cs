@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.JavaScript.NodeApi;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Alethic.AspNet.Optimization.Tests;
+namespace Alethic.AspNet.Optimization.Rollup.Tests;
 
 /// <summary>
 /// Builds real bundles through the real toolchain on a real Node engine, and runs what comes out.
@@ -29,7 +29,7 @@ public class ToolchainTests
     public static void Initialize(TestContext context)
     {
         _pool = new NodeEnginePool(new NodeEnginePoolOptions() { EngineCount = 1 }, NullLoggerFactory.Instance, EmptyServices.Instance);
-        _toolchain = new Toolchain(_pool, NodeModuleSource.FromFile(Path.Combine(AppContext.BaseDirectory, "alethic.aspnet.optimization", "toolchain.cjs")));
+        _toolchain = new Toolchain(_pool, NodeModuleSource.FromFile(Path.Combine(AppContext.BaseDirectory, "alethic.aspnet.optimization.rollup", "toolchain.cjs")));
     }
 
     /// <summary>
@@ -105,6 +105,15 @@ public class ToolchainTests
         CollectionAssert.Contains(result.WatchFiles.ToArray(), Fixture("styles/_palette.scss"));
         Assert.IsNotNull(result.Map);
         StringAssert.Contains(result.Map, "site.scss");
+    }
+
+    [TestMethod]
+    [DataRow("Module", "modules/main.js", "modules/math.ts")]
+    [DataRow("Style", "styles/site.scss", "styles/_palette.scss")]
+    public async Task A_bundle_built_from_an_entry_takes_one(string kind, string first, string second)
+    {
+        var exception = await Assert.ThrowsExactlyAsync<JSException>(() => _toolchain!.BuildAsync(new ToolchainRequest((BundleKind)Enum.Parse(typeof(BundleKind), kind), [Fixture(first), Fixture(second)], "out")));
+        StringAssert.Contains(exception.Message, "built from one entry");
     }
 
     [TestMethod]

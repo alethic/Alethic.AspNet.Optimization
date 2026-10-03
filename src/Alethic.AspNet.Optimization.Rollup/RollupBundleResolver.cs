@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Web.Optimization;
 
-namespace Alethic.AspNet.Optimization;
+namespace Alethic.AspNet.Optimization.Rollup;
 
 /// <summary>
 /// Lists a <see cref="RollupBundle"/>'s contents as the bundle itself, and every other bundle's as the resolver it

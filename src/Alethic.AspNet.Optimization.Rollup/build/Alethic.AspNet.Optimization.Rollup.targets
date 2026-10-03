@@ -1,0 +1,8 @@
+<Project>
+
+    <!-- Copies the toolchain into the consuming project's output, where Toolchain.Default finds it. -->
+    <ItemGroup>
+        <None Include="$(MSBuildThisFileDirectory)alethic.aspnet.optimization.rollup\*" Link="alethic.aspnet.optimization.rollup\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" Visible="false" />
+    </ItemGroup>
+
+</Project>

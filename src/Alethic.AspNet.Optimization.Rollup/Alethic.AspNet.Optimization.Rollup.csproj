@@ -12,6 +12,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <InternalsVisibleTo Include="$(AssemblyName).Tests" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Alethic.Node.AspNet" Version="1.0.0-pre.37" />
         <PackageReference Include="Microsoft.AspNet.Web.Optimization" Version="1.1.3" />
         <PackageReference Include="System.Text.Json" Version="10.0.12" />
@@ -42,12 +46,12 @@
     <Target Name="IncludeToolchain" AfterTargets="BuildToolchain" BeforeTargets="AssignTargetPaths">
         <ItemGroup>
             <ToolchainFile Include="$(ToolchainDistDir)*" />
-            <None Include="@(ToolchainFile)" Link="alethic.aspnet.optimization\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="build\alethic.aspnet.optimization\%(Filename)%(Extension)" />
+            <None Include="@(ToolchainFile)" Link="alethic.aspnet.optimization.rollup\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="build\alethic.aspnet.optimization.rollup\%(Filename)%(Extension)" />
         </ItemGroup>
     </Target>
 
     <ItemGroup>
-        <None Include="build\Alethic.AspNet.Optimization.targets" Pack="true" PackagePath="build\;buildTransitive\" />
+        <None Include="build\Alethic.AspNet.Optimization.Rollup.targets" Pack="true" PackagePath="build\;buildTransitive\" />
     </ItemGroup>
 
 </Project>

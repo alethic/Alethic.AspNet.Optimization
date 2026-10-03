@@ -1,6 +1,6 @@
 using System;
 
-namespace Alethic.AspNet.Optimization.Tests;
+namespace Alethic.AspNet.Optimization.Rollup.Tests;
 
 /// <summary>
 /// A service provider with no services, for a pool made without a container.

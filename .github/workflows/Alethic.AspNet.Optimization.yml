@@ -35,7 +35,7 @@ jobs:
       with:
         node-version: 24.x
         cache: npm
-        cache-dependency-path: src/Alethic.AspNet.Optimization/toolchain/package-lock.json
+        cache-dependency-path: src/Alethic.AspNet.Optimization.Rollup/toolchain/package-lock.json
     - name: Install GitVersion
       uses: gittools/actions/gitversion/setup@v4
       with:
@@ -90,7 +90,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        - { run: Alethic.AspNet.Optimization.Tests, tfm: net48, sys: win-x64 }
+        - { run: Alethic.AspNet.Optimization.Rollup.Tests, tfm: net48, sys: win-x64 }
     name: Test (${{ matrix.run }}:${{ matrix.tfm }}:${{ matrix.sys }})
     needs:
     - build

@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 
-namespace Alethic.AspNet.Optimization;
+namespace Alethic.AspNet.Optimization.Rollup;
 
 /// <summary>
 /// A bundle the toolchain built.
 /// </summary>
-public sealed class ToolchainResult
+sealed class ToolchainResult
 {
 
     /// <summary>

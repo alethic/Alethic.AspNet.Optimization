@@ -15,13 +15,13 @@
     <Project Path="samples/Alethic.AspNet.Optimization.Sample/Alethic.AspNet.Optimization.Sample.csproj" />
   </Folder>
   <Folder Name="/src/">
-    <Project Path="src/Alethic.AspNet.Optimization/Alethic.AspNet.Optimization.csproj" />
+    <Project Path="src/Alethic.AspNet.Optimization.Rollup/Alethic.AspNet.Optimization.Rollup.csproj" />
   </Folder>
   <Folder Name="/src/dist/">
     <Project Path="src/dist-nuget/dist-nuget.csproj" />
     <Project Path="src/dist-tests/dist-tests.csproj" />
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="tests/Alethic.AspNet.Optimization.Tests/Alethic.AspNet.Optimization.Tests.csproj" />
+    <Project Path="tests/Alethic.AspNet.Optimization.Rollup.Tests/Alethic.AspNet.Optimization.Rollup.Tests.csproj" />
   </Folder>
 </Solution>

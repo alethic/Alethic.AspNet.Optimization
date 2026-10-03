@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Optimization;
 
-namespace Alethic.AspNet.Optimization;
+namespace Alethic.AspNet.Optimization.Rollup;
 
 /// <summary>
 /// Builds a <see cref="RollupBundle"/> with the toolchain, in place of the content System.Web.Optimization would join.
@@ -21,17 +21,14 @@ sealed class RollupBundleTransform : IBundleTransform
 {
 
     readonly RollupBundle _bundle;
-    readonly Toolchain? _toolchain;
 
     /// <summary>
     /// Initializes a new instance.
     /// </summary>
     /// <param name="bundle">The bundle this builds.</param>
-    /// <param name="toolchain">The toolchain to build with, or <see langword="null"/> for <see cref="Toolchain.Default"/>.</param>
-    public RollupBundleTransform(RollupBundle bundle, Toolchain? toolchain)
+    public RollupBundleTransform(RollupBundle bundle)
     {
         _bundle = bundle;
-        _toolchain = toolchain;
     }
 
     /// <summary>
@@ -54,8 +51,7 @@ sealed class RollupBundleTransform : IBundleTransform
         var request = new ToolchainRequest(_bundle.Kind, inputs, VirtualPathUtility.GetFileName(context.BundleVirtualPath)) { Minify = minify, SourceMap = sourceMap };
 
         // off the request's thread, whose synchronization context the build's continuations must not wait for
-        var toolchain = _toolchain ?? Toolchain.Default;
-        var result = Task.Run(() => toolchain.BuildAsync(request)).GetAwaiter().GetResult();
+        var result = Task.Run(() => Toolchain.Default.BuildAsync(request)).GetAwaiter().GetResult();
 
         foreach (var warning in result.Warnings)
             Trace.TraceWarning("{0}: {1}", context.BundleVirtualPath, warning);

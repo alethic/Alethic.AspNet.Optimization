@@ -1,8 +1,8 @@
 using System.Web;
 
-[assembly: PreApplicationStartMethod(typeof(Alethic.AspNet.Optimization.PreApplicationStart), nameof(Alethic.AspNet.Optimization.PreApplicationStart.Start))]
+[assembly: PreApplicationStartMethod(typeof(Alethic.AspNet.Optimization.Rollup.PreApplicationStart), nameof(Alethic.AspNet.Optimization.Rollup.PreApplicationStart.Start))]
 
-namespace Alethic.AspNet.Optimization;
+namespace Alethic.AspNet.Optimization.Rollup;
 
 /// <summary>
 /// Runs as the application starts, before <c>Application_Start</c>.

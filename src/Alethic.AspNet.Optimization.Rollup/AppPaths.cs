@@ -3,7 +3,7 @@ using System.IO;
 using System.Web;
 using System.Web.Hosting;
 
-namespace Alethic.AspNet.Optimization;
+namespace Alethic.AspNet.Optimization.Rollup;
 
 /// <summary>
 /// Converts between the application's virtual paths and the files they name on disk.

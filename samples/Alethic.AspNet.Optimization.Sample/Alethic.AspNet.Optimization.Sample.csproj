@@ -35,7 +35,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Alethic.AspNet.Optimization\Alethic.AspNet.Optimization.csproj" />
+        <ProjectReference Include="..\..\src\Alethic.AspNet.Optimization.Rollup\Alethic.AspNet.Optimization.Rollup.csproj" />
     </ItemGroup>
 
     <!-- the site's sources are served from where they are, not compiled or copied -->

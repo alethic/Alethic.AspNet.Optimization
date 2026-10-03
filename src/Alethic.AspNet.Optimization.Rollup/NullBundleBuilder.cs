@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Web.Optimization;
 
-namespace Alethic.AspNet.Optimization;
+namespace Alethic.AspNet.Optimization.Rollup;
 
 /// <summary>
 /// Builds no content: a <see cref="RollupBundle"/>'s transform reads its files itself.

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Web.Optimization;
 
-namespace Alethic.AspNet.Optimization;
+namespace Alethic.AspNet.Optimization.Rollup;
 
 /// <summary>
 /// Keeps a bundle's files in the order they were included, where the default orderer moves files it recognizes, such

@@ -1,5 +1,7 @@
 using System.Web.Optimization;
 
+using Alethic.AspNet.Optimization.Rollup;
+
 namespace Alethic.AspNet.Optimization.Sample;
 
 /// <summary>
@@ -14,18 +16,16 @@ public static class BundleConfig
     /// <param name="bundles">The application's bundles.</param>
     public static void RegisterBundles(BundleCollection bundles)
     {
-        // classic scripts: status.ts uses the function greeting.js declares at its top level
-        bundles.Add(new RollupBundle("~/bundle/classic.js", BundleKind.Script)
+        // classic scripts, in the order they run: status.ts uses the function greeting.js declares at its top level
+        bundles.Add(new RollupScriptBundle("~/bundle/classic.js")
             .Include("~/Scripts/classic/greeting.js")
             .Include("~/Scripts/classic/status.ts"));
 
-        // ES modules: main.ts imports counter.ts, and neither's names reach the page's globals
-        bundles.Add(new RollupBundle("~/bundle/app.js", BundleKind.Module)
-            .Include("~/Scripts/app/main.ts"));
+        // ES modules from their entry: main.ts imports counter.ts, and neither's names reach the page's globals
+        bundles.Add(new RollupModuleBundle("~/bundle/app.js", "~/Scripts/app/main.ts"));
 
-        // a stylesheet: site.scss uses the variables and mixins of its partials
-        bundles.Add(new RollupBundle("~/bundle/site.css", BundleKind.Style)
-            .Include("~/Styles/site.scss"));
+        // a stylesheet from its entry: site.scss uses the variables and mixins of its partials
+        bundles.Add(new RollupStyleBundle("~/bundle/site.css", "~/Styles/site.scss"));
     }
 
 }

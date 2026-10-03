@@ -1,9 +1,9 @@
-namespace Alethic.AspNet.Optimization;
+namespace Alethic.AspNet.Optimization.Rollup;
 
 /// <summary>
 /// How a bundle's files combine.
 /// </summary>
-public enum BundleKind
+enum BundleKind
 {
 
     /// <summary>
