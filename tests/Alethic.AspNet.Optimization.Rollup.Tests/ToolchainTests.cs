@@ -22,14 +22,14 @@ public class ToolchainTests
     static Toolchain? _toolchain;
 
     /// <summary>
-    /// Starts one engine for the class, and the toolchain from the test's output.
+    /// Starts one engine for the class, and the toolchain embedded in the library, as a site loads it.
     /// </summary>
     /// <param name="context"></param>
     [ClassInitialize]
     public static void Initialize(TestContext context)
     {
         _pool = new NodeEnginePool(new NodeEnginePoolOptions() { EngineCount = 1 }, NullLoggerFactory.Instance, EmptyServices.Instance);
-        _toolchain = new Toolchain(_pool, NodeModuleSource.FromFile(Path.Combine(AppContext.BaseDirectory, "alethic.aspnet.optimization.rollup", "toolchain.cjs")));
+        _toolchain = new Toolchain(_pool, EmbeddedToolchainSource.Instance);
     }
 
     /// <summary>

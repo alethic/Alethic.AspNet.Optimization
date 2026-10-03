@@ -2,10 +2,16 @@
 
     <PropertyGroup>
         <TargetFramework>net48</TargetFramework>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <Description>System.Web.Optimization bundles built by Rollup, Sass, SWC, Terser and Lightning CSS, running in the site's own Node engines through Alethic.Node.</Description>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageIcon>icon.png</PackageIcon>
         <PackageTags>aspnet;bundling;minification;rollup;sass;typescript;webforms</PackageTags>
     </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="\" />
+        <None Include="..\..\icon.png" Pack="true" PackagePath="\" />
+    </ItemGroup>
 
     <ItemGroup>
         <Reference Include="System.Web" />
@@ -23,8 +29,8 @@
 
     <!--
         The toolchain: an npm project under toolchain\ that Rollup builds into one CommonJS file, with the WebAssembly
-        binaries its tools read from beside it. It is copied to a folder of its own in the consumer's output, by this
-        project's build and by the package's build targets alike.
+        binaries its tools read from beside it. They are embedded in the assembly, which writes them out where Node can
+        load them the first time a bundle is built.
     -->
     <PropertyGroup>
         <ToolchainDir>$(MSBuildThisFileDirectory)toolchain\</ToolchainDir>
@@ -46,12 +52,8 @@
     <Target Name="IncludeToolchain" AfterTargets="BuildToolchain" BeforeTargets="AssignTargetPaths">
         <ItemGroup>
             <ToolchainFile Include="$(ToolchainDistDir)*" />
-            <None Include="@(ToolchainFile)" Link="alethic.aspnet.optimization.rollup\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="build\alethic.aspnet.optimization.rollup\%(Filename)%(Extension)" />
+            <EmbeddedResource Include="@(ToolchainFile)" LogicalName="Alethic.AspNet.Optimization.Rollup.toolchain.%(Filename)%(Extension)" />
         </ItemGroup>
     </Target>
-
-    <ItemGroup>
-        <None Include="build\Alethic.AspNet.Optimization.Rollup.targets" Pack="true" PackagePath="build\;buildTransitive\" />
-    </ItemGroup>
 
 </Project>

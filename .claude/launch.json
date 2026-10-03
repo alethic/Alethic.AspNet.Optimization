@@ -1,0 +1,11 @@
+{
+    "version": "0.0.1",
+    "configurations": [
+        {
+            "name": "sample",
+            "runtimeExecutable": "dotnet",
+            "runtimeArgs": ["run", "--project", "D:/Alethic.AspNet.Optimization/samples/Alethic.AspNet.Optimization.Sample"],
+            "port": 8091
+        }
+    ]
+}

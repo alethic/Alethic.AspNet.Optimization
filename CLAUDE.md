@@ -11,8 +11,9 @@ Terser and Lightning CSS) on Node engines embedded in the process through Alethi
 - `src/Alethic.AspNet.Optimization.Rollup` - the library.
   - `toolchain/` - the npm project Rollup builds into `dist/toolchain.cjs`, with the WebAssembly binaries the tools
     read from beside it. The csproj's `BuildToolchain` target runs `npm ci` and `npx rollup -c`; the files are copied
-    to `alethic.aspnet.optimization.rollup\` in the output and packed under `build\`, where
-    `build/Alethic.AspNet.Optimization.Rollup.targets` copies them into a consumer's output.
+    to `alethic.aspnet.optimization.rollup\` in the output and packed under `toolchain\`, where
+    `build/Alethic.AspNet.Optimization.Rollup.targets`, packed into both `build\` and `buildTransitive\`, finds them
+    by `..\toolchain\` and copies them into a consumer's output.
   - `toolchain/src/index.js` - `build(request)`, the one entry point. Every bundle is one Rollup build. A module
     bundle's entry is its entry module; `classicScripts` and `styles` in `toolchain/src/plugins` make Rollup's entry
     from classic scripts and from a stylesheet; `typescript` and `minifyScript` transform and minify.
