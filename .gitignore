@@ -8,3 +8,6 @@ dist/
 *.binlog
 TestResults/
 *.swp
+
+# IIS Express
+.vs/

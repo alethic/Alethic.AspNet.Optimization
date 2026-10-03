@@ -1,0 +1,31 @@
+@use 'variables' as *;
+
+@mixin accent($color) {
+    border-left: 6px solid $color;
+
+    .panel__result {
+        color: darken-ish($color);
+    }
+}
+
+@function darken-ish($color) {
+    @return color-mix(in srgb, $color 70%, black);
+}
+
+.panel {
+    background: $card;
+    border: 1px solid $line;
+    border-radius: $radius;
+    margin: 1rem 0;
+    padding: 0.5rem 1.25rem 1rem;
+    @include accent($waiting);
+
+    &--ok {
+        @include accent($ok);
+    }
+
+    h2 {
+        font-size: 1.1rem;
+        margin-bottom: 0.25rem;
+    }
+}

@@ -11,6 +11,9 @@
     <File Path="Alethic.AspNet.Optimization.dist.msbuildproj" />
     <File Path=".github/workflows/Alethic.AspNet.Optimization.yml" />
   </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/Alethic.AspNet.Optimization.Sample/Alethic.AspNet.Optimization.Sample.csproj" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/Alethic.AspNet.Optimization/Alethic.AspNet.Optimization.csproj" />
   </Folder>

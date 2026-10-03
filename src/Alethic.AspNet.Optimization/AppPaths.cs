@@ -40,13 +40,16 @@ static class AppPaths
     }
 
     /// <summary>
-    /// Returns the URL a browser loads a file from: its absolute virtual path where the file is in the application, and
-    /// a <c>file:</c> URL where it is not.
+    /// Returns the URL a browser loads a file from: its absolute virtual path where the file is in the application, a
+    /// <c>file:</c> URL where it is elsewhere on disk, and the path as it is where it is not absolute.
     /// </summary>
-    /// <param name="physicalPath">An absolute path.</param>
-    public static string ToUrl(string physicalPath)
+    /// <param name="path">A path.</param>
+    public static string ToUrl(string path)
     {
-        return ToVirtual(physicalPath) is string virtualPath ? VirtualPathUtility.ToAbsolute(virtualPath) : new Uri(physicalPath).AbsoluteUri;
+        if (Path.IsPathRooted(path) == false)
+            return path;
+
+        return ToVirtual(path) is string virtualPath ? VirtualPathUtility.ToAbsolute(virtualPath) : new Uri(path).AbsoluteUri;
     }
 
 }

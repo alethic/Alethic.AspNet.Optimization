@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!--
+        A Web Forms site, as an SDK-style project: the code-behind compiles to bin\, beside the pages, which is all IIS
+        needs. Cogito.AspNet.MSBuild writes the binding redirects into Web.config on each build. Running the project,
+        with dotnet run or from Visual Studio, serves the site's folder with IIS Express.
+    -->
+
+    <PropertyGroup>
+        <TargetFramework>net48</TargetFramework>
+        <RootNamespace>Alethic.AspNet.Optimization.Sample</RootNamespace>
+        <OutputPath>bin\</OutputPath>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+        <IsPackable>false</IsPackable>
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>
+        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+        <IsWebApplicationProject>true</IsWebApplicationProject>
+    </PropertyGroup>
+
+    <PropertyGroup Label="Running: IIS Express, 64-bit, as libnode is, on the site's folder.">
+        <IISExpressPort Condition=" '$(IISExpressPort)' == '' ">8091</IISExpressPort>
+        <RunCommand>$(ProgramW6432)\IIS Express\iisexpress.exe</RunCommand>
+        <RunArguments>/path:"$(MSBuildProjectDirectory)" /port:$(IISExpressPort) /clr:v4.0</RunArguments>
+        <RunWorkingDirectory>$(MSBuildProjectDirectory)</RunWorkingDirectory>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Reference Include="System.Web" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Cogito.AspNet.MSBuild" Version="1.0.3" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.JavaScript.LibNode.win-x64" Version="20.1800.203" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\Alethic.AspNet.Optimization\Alethic.AspNet.Optimization.csproj" />
+    </ItemGroup>
+
+    <!-- the site's sources are served from where they are, not compiled or copied -->
+    <ItemGroup>
+        <None Remove="Scripts\**;Styles\**" />
+        <Content Include="Scripts\**;Styles\**" />
+    </ItemGroup>
+
+</Project>

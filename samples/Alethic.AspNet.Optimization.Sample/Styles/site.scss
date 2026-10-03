@@ -1,0 +1,37 @@
+@use 'variables' as *;
+@use 'panel';
+
+body {
+    background: $paper;
+    color: $ink;
+    font-family: system-ui, sans-serif;
+    margin: 0;
+}
+
+.page {
+    margin: 0 auto;
+    max-width: 48rem;
+    padding: 1rem;
+
+    .lede {
+        color: $muted;
+    }
+}
+
+// compiled from Sass, so the style panel is green from the start
+#style {
+    @extend .panel--ok;
+}
+
+.counter {
+    font: inherit;
+    padding: 0.25rem 0.75rem;
+}
+
+.rendered pre {
+    background: $card;
+    border: 1px solid $line;
+    border-radius: $radius;
+    overflow-x: auto;
+    padding: 0.75rem;
+}
