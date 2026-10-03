@@ -18,8 +18,13 @@ Terser and Lightning CSS) on Node engines embedded in the process through Alethi
     from classic scripts and from a stylesheet; `typescript` and `minifyScript` transform and minify.
   - The public API is the bundles: `RollupScriptBundle` (classic scripts, included in order), and the
     `RollupEntryBundle`s, `RollupModuleBundle` and `RollupStyleBundle`, built from one entry file. `RollupBundle` is
-    their base. Everything else is internal: `Toolchain` calls `build` on an engine from `AspNetNode.Pool`;
-    `RollupBundleTransform` and `RollupBundleResolver` are the System.Web.Optimization side.
+    their base. Everything else is internal: `Toolchain` calls `build` on an engine from `AspNetNode.Pool`.
+  - The System.Web.Optimization side: `RollupBundleBuilder` is each bundle's `IBundleBuilder` and runs the whole
+    Rollup build, minification included; `RollupBundle.ApplyTransforms` makes the response, its files being every file
+    the build read, then runs whatever transforms the site added. `Transforms` is empty by default. Files are read
+    through `BundleToolchainFiles`: included files from their `BundleFile`, item transforms applied, everything else
+    from `BundleTable.VirtualPathProvider`. `RollupBundleResolver` renders a bundle as itself where optimizations are
+    off.
 - `tests/Alethic.AspNet.Optimization.Rollup.Tests` - MSTest, `net48`, x64. Builds fixtures through the real toolchain on a
   real libnode engine and runs the output.
 - `samples/Alethic.AspNet.Optimization.Sample` - a Web Forms site with one bundle of each kind, served by IIS Express.

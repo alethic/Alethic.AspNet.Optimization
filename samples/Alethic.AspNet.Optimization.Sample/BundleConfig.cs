@@ -17,9 +17,13 @@ public static class BundleConfig
     public static void RegisterBundles(BundleCollection bundles)
     {
         // classic scripts, in the order they run: status.ts uses the function greeting.js declares at its top level
-        bundles.Add(new RollupScriptBundle("~/bundle/classic.js")
+        var classic = new RollupScriptBundle("~/bundle/classic.js")
             .Include("~/Scripts/classic/greeting.js")
-            .Include("~/Scripts/classic/status.ts"));
+            .Include("~/Scripts/classic/status.ts");
+
+        // the site's own transforms run after Rollup's build, as on any bundle
+        classic.Transforms.Add(new FooterTransform());
+        bundles.Add(classic);
 
         // ES modules from their entry: main.ts imports counter.ts, and neither's names reach the page's globals
         bundles.Add(new RollupModuleBundle("~/bundle/app.js", "~/Scripts/app/main.ts"));
