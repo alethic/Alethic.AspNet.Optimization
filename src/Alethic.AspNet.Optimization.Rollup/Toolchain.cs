@@ -69,6 +69,11 @@ sealed class Toolchain
                 ["fileName"] = request.FileName,
                 ["minify"] = request.Minify,
                 ["sourceMap"] = request.SourceMap,
+                ["files"] = new JSObject
+                {
+                    ["exists"] = new JSFunction(path => request.Files.Exists((string)path)),
+                    ["read"] = new JSFunction(path => request.Files.Read((string)path) is string content ? content : JSValue.Null),
+                },
             };
 
             var result = await ((JSPromise)exports.CallMethod("build", options)).AsTask();

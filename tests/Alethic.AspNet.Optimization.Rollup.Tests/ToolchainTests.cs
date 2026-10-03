@@ -66,7 +66,7 @@ public class ToolchainTests
     [DataRow(true)]
     public async Task Classic_scripts_share_one_global_scope(bool minify)
     {
-        var result = await _toolchain!.BuildAsync(new ToolchainRequest(BundleKind.Script, [Fixture("classic/first.js"), Fixture("classic/second.ts")], "classic.js") { Minify = minify });
+        var result = await _toolchain!.BuildAsync(new ToolchainRequest(BundleKind.Script, [Fixture("classic/first.js"), Fixture("classic/second.ts")], "classic.js", new DiskToolchainFiles()) { Minify = minify });
 
         // second.ts calls a function and reads a variable first.js declared at its top level, and its own top-level
         // `this` is the global object, as it is for a script
@@ -77,7 +77,7 @@ public class ToolchainTests
     [TestMethod]
     public async Task Classic_scripts_map_back_to_their_files()
     {
-        var result = await _toolchain!.BuildAsync(new ToolchainRequest(BundleKind.Script, [Fixture("classic/first.js"), Fixture("classic/second.ts")], "classic.js") { Minify = true, SourceMap = true });
+        var result = await _toolchain!.BuildAsync(new ToolchainRequest(BundleKind.Script, [Fixture("classic/first.js"), Fixture("classic/second.ts")], "classic.js", new DiskToolchainFiles()) { Minify = true, SourceMap = true });
 
         Assert.IsNotNull(result.Map);
         StringAssert.Contains(result.Map, "first.js");
@@ -88,7 +88,7 @@ public class ToolchainTests
     [TestMethod]
     public async Task Modules_are_bundled_without_leaking_their_names()
     {
-        var result = await _toolchain!.BuildAsync(new ToolchainRequest(BundleKind.Module, [Fixture("modules/main.js")], "main.js") { Minify = true });
+        var result = await _toolchain!.BuildAsync(new ToolchainRequest(BundleKind.Module, [Fixture("modules/main.js")], "main.js", new DiskToolchainFiles()) { Minify = true });
 
         Assert.AreEqual("42", await RunAndRead(result.Code, "answer"));
         Assert.AreEqual("undefined", await RunAndRead(result.Code, "local"));
@@ -98,7 +98,7 @@ public class ToolchainTests
     [TestMethod]
     public async Task Sass_compiles_and_reports_its_partials()
     {
-        var result = await _toolchain!.BuildAsync(new ToolchainRequest(BundleKind.Style, [Fixture("styles/site.scss")], "site.css") { Minify = true, SourceMap = true });
+        var result = await _toolchain!.BuildAsync(new ToolchainRequest(BundleKind.Style, [Fixture("styles/site.scss")], "site.css", new DiskToolchainFiles()) { Minify = true, SourceMap = true });
 
         StringAssert.Contains(result.Code, ".banner .title{font-weight:700}");
         StringAssert.Contains(result.Code, "#369");
@@ -112,8 +112,37 @@ public class ToolchainTests
     [DataRow("Style", "styles/site.scss", "styles/_palette.scss")]
     public async Task A_bundle_built_from_an_entry_takes_one(string kind, string first, string second)
     {
-        var exception = await Assert.ThrowsExactlyAsync<JSException>(() => _toolchain!.BuildAsync(new ToolchainRequest((BundleKind)Enum.Parse(typeof(BundleKind), kind), [Fixture(first), Fixture(second)], "out")));
+        var exception = await Assert.ThrowsExactlyAsync<JSException>(() => _toolchain!.BuildAsync(new ToolchainRequest((BundleKind)Enum.Parse(typeof(BundleKind), kind), [Fixture(first), Fixture(second)], "out", new DiskToolchainFiles())));
         StringAssert.Contains(exception.Message, "built from one entry");
+    }
+
+    [TestMethod]
+    public async Task Every_file_is_read_through_the_host()
+    {
+        var files = new DiskToolchainFiles();
+        await _toolchain!.BuildAsync(new ToolchainRequest(BundleKind.Style, [Fixture("styles/site.scss")], "site.css", files));
+
+        CollectionAssert.AreEquivalent(new[] { Fixture("styles/site.scss"), Fixture("styles/_palette.scss") }, files.Reads);
+    }
+
+    [TestMethod]
+    public async Task Files_need_not_be_on_disk()
+    {
+        var root = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+        var files = new MemoryToolchainFiles
+        {
+            [Path.Combine(root, "main.ts")] = "import { answer } from './answer';\nglobalThis.answer = answer;",
+            [Path.Combine(root, "answer.ts")] = "export const answer: number = 42;",
+            [Path.Combine(root, "site.scss")] = "@use 'colors';\n.x { color: colors.$accent; }",
+            [Path.Combine(root, "_colors.scss")] = "$accent: red;",
+        };
+
+        var script = await _toolchain!.BuildAsync(new ToolchainRequest(BundleKind.Module, [Path.Combine(root, "main.ts")], "main.js", files));
+        Assert.AreEqual("42", await RunAndRead(script.Code, "answer"));
+
+        var style = await _toolchain!.BuildAsync(new ToolchainRequest(BundleKind.Style, [Path.Combine(root, "site.scss")], "site.css", files) { Minify = true });
+        Assert.AreEqual(".x{color:red}", style.Code.Trim());
+        CollectionAssert.Contains(style.WatchFiles.ToArray(), Path.Combine(root, "_colors.scss"));
     }
 
     [TestMethod]
@@ -124,7 +153,7 @@ public class ToolchainTests
 
         try
         {
-            await Assert.ThrowsExactlyAsync<JSException>(() => _toolchain!.BuildAsync(new ToolchainRequest(BundleKind.Script, [broken], "broken.js")));
+            await Assert.ThrowsExactlyAsync<JSException>(() => _toolchain!.BuildAsync(new ToolchainRequest(BundleKind.Script, [broken], "broken.js", new DiskToolchainFiles())));
         }
         finally
         {

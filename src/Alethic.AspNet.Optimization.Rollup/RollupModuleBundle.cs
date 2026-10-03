@@ -1,3 +1,5 @@
+using System.Web.Optimization;
+
 namespace Alethic.AspNet.Optimization.Rollup;
 
 /// <summary>
@@ -12,8 +14,10 @@ public class RollupModuleBundle : RollupEntryBundle
     /// </summary>
     /// <param name="virtualPath">The bundle's virtual path, such as <c>~/bundle/app.js</c>.</param>
     /// <param name="entryVirtualPath">The virtual path of the entry module, such as <c>~/Scripts/app/main.ts</c>.</param>
-    public RollupModuleBundle(string virtualPath, string entryVirtualPath) :
-        base(virtualPath, entryVirtualPath)
+    /// <param name="transforms">Transforms applied to the entry module's content before it is built, as to any file a
+    /// bundle includes.</param>
+    public RollupModuleBundle(string virtualPath, string entryVirtualPath, params IItemTransform[] transforms) :
+        base(virtualPath, entryVirtualPath, transforms)
     {
 
     }

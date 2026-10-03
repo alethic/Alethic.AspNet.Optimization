@@ -5,6 +5,7 @@
 import path from 'node:path';
 import { rollup } from '@rollup/wasm-node';
 import { classicScripts } from './plugins/classicScripts.js';
+import { hostFiles } from './plugins/hostFiles.js';
 import { minifyScript } from './plugins/minifyScript.js';
 import { styles } from './plugins/styles.js';
 import { typescript } from './plugins/typescript.js';
@@ -20,20 +21,22 @@ import { typescript } from './plugins/typescript.js';
  * @param {string} request.fileName the output's file name, which names the output in its source map
  * @param {boolean} request.minify whether to minify the output
  * @param {boolean} request.sourceMap whether to produce a source map
+ * @param {{ exists(path: string): boolean, read(path: string): string | null }} request.files the host's files, through
+ *     which every file is found and read, named by absolute path
  * @returns {Promise<{ code: string, map: string | null, watchFiles: string[], warnings: string[] }>}
  */
 export async function build(request) {
-    const { kind, inputs, fileName, minify = false, sourceMap = false } = request;
+    const { kind, inputs, fileName, minify = false, sourceMap = false, files } = request;
     const warnings = [];
 
     if ((kind === 'module' || kind === 'style') && inputs.length !== 1)
         throw new Error(`A ${kind} bundle is built from one entry, not ${inputs.length}.`);
 
-    const plugins = [typescript()];
+    const plugins = [hostFiles(files), typescript()];
     if (kind === 'script')
         plugins.push(classicScripts(inputs));
     else if (kind === 'style')
-        plugins.push(styles(inputs[0], { fileName, minify, sourceMap, warnings }));
+        plugins.push(styles(inputs[0], files, { fileName, minify, sourceMap, warnings }));
     else if (kind !== 'module')
         throw new Error(`Unknown bundle kind '${kind}'.`);
 

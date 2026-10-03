@@ -12,13 +12,13 @@ static class AppPaths
 {
 
     /// <summary>
-    /// Returns the file a virtual path names.
+    /// Returns the path a virtual path maps to, which names the file to the toolchain whether or not it is on disk.
     /// </summary>
     /// <param name="virtualPath">An application-relative or absolute virtual path.</param>
-    /// <exception cref="InvalidOperationException">The path names no file on disk.</exception>
+    /// <exception cref="InvalidOperationException">The virtual path maps to no path.</exception>
     public static string ToPhysical(string virtualPath)
     {
-        return HostingEnvironment.MapPath(virtualPath) ?? throw new InvalidOperationException($"'{virtualPath}' names no file on disk. Bundles built by the toolchain read their files from disk.");
+        return HostingEnvironment.MapPath(virtualPath) ?? throw new InvalidOperationException($"'{virtualPath}' maps to no path in the application.");
     }
 
     /// <summary>

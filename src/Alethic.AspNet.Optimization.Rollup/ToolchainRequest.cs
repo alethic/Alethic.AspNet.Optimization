@@ -14,11 +14,13 @@ sealed class ToolchainRequest
     /// <param name="kind">How the inputs combine.</param>
     /// <param name="inputs">Absolute paths of the inputs, in bundle order.</param>
     /// <param name="fileName">The output's file name, which names it in its source map.</param>
-    public ToolchainRequest(BundleKind kind, IReadOnlyList<string> inputs, string fileName)
+    /// <param name="files">The files the build reads, the inputs and everything they import.</param>
+    public ToolchainRequest(BundleKind kind, IReadOnlyList<string> inputs, string fileName, ToolchainFiles files)
     {
         Kind = kind;
         Inputs = inputs;
         FileName = fileName;
+        Files = files;
     }
 
     /// <summary>
@@ -35,6 +37,11 @@ sealed class ToolchainRequest
     /// The output's file name, which names it in its source map.
     /// </summary>
     public string FileName { get; }
+
+    /// <summary>
+    /// The files the build reads, the inputs and everything they import.
+    /// </summary>
+    public ToolchainFiles Files { get; }
 
     /// <summary>
     /// Whether to minify the output.

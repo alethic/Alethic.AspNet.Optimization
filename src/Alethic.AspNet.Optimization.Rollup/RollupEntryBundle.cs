@@ -1,4 +1,5 @@
 using System;
+using System.Web.Optimization;
 
 namespace Alethic.AspNet.Optimization.Rollup;
 
@@ -15,14 +16,16 @@ public abstract class RollupEntryBundle : RollupBundle
     /// </summary>
     /// <param name="virtualPath">The bundle's virtual path.</param>
     /// <param name="entryVirtualPath">The virtual path of the entry file.</param>
-    private protected RollupEntryBundle(string virtualPath, string entryVirtualPath) :
+    /// <param name="transforms">Transforms applied to the entry file's content before it is built, as to any file a bundle
+    /// includes.</param>
+    private protected RollupEntryBundle(string virtualPath, string entryVirtualPath, IItemTransform[] transforms) :
         base(virtualPath)
     {
         if (string.IsNullOrEmpty(entryVirtualPath))
             throw new ArgumentException("The entry's virtual path is required.", nameof(entryVirtualPath));
 
         EntryVirtualPath = entryVirtualPath;
-        Include(entryVirtualPath);
+        Include(entryVirtualPath, transforms);
     }
 
     /// <summary>

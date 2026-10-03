@@ -47,8 +47,10 @@ sealed class RollupBundleTransform : IBundleTransform
         var minify = _bundle.Minify ?? (context.EnableOptimizations && context.EnableInstrumentation == false);
         var sourceMap = _bundle.SourceMap ?? context.EnableOptimizations == false;
 
+        // the inputs are named by the paths their virtual paths map to, and read through System.Web.Optimization
         var inputs = response.Files.Select(f => AppPaths.ToPhysical(f.IncludedVirtualPath)).ToList();
-        var request = new ToolchainRequest(_bundle.Kind, inputs, VirtualPathUtility.GetFileName(context.BundleVirtualPath)) { Minify = minify, SourceMap = sourceMap };
+        var files = new BundleToolchainFiles(response.Files);
+        var request = new ToolchainRequest(_bundle.Kind, inputs, VirtualPathUtility.GetFileName(context.BundleVirtualPath), files) { Minify = minify, SourceMap = sourceMap };
 
         // off the request's thread, whose synchronization context the build's continuations must not wait for
         var result = Task.Run(() => Toolchain.Default.BuildAsync(request)).GetAwaiter().GetResult();
