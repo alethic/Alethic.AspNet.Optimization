@@ -1,0 +1,24 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="CLAUDE.md" />
+    <File Path="Directory.Build.props" />
+    <File Path="GitVersion.yml" />
+    <File Path="global.json" />
+    <File Path="README.md" />
+    <File Path="Alethic.AspNet.Optimization.dist.msbuildproj" />
+    <File Path=".github/workflows/Alethic.AspNet.Optimization.yml" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Alethic.AspNet.Optimization/Alethic.AspNet.Optimization.csproj" />
+  </Folder>
+  <Folder Name="/src/dist/">
+    <Project Path="src/dist-nuget/dist-nuget.csproj" />
+    <Project Path="src/dist-tests/dist-tests.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Alethic.AspNet.Optimization.Tests/Alethic.AspNet.Optimization.Tests.csproj" />
+  </Folder>
+</Solution>

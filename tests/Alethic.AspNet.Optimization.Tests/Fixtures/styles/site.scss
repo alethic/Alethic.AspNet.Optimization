@@ -1,0 +1,8 @@
+@use 'palette';
+
+.banner {
+    color: palette.$accent;
+    .title {
+        font-weight: bold;
+    }
+}

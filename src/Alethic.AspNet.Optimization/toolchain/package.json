@@ -1,0 +1,24 @@
+{
+  "name": "alethic-aspnet-optimization-toolchain",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "rollup -c"
+  },
+  "dependencies": {
+    "@jridgewell/sourcemap-codec": "1.6.0",
+    "@rollup/wasm-node": "4.64.0",
+    "@swc/wasm-typescript": "1.16.13",
+    "immutable": "5.1.9",
+    "lightningcss-wasm": "1.33.0",
+    "magic-string": "1.4.2",
+    "sass": "1.105.1",
+    "terser": "5.51.2"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "*",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "*",
+    "rollup": "4.64.0"
+  }
+}

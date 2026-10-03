@@ -1,0 +1,53 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net48</TargetFramework>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <Description>System.Web.Optimization bundles built by Rollup, Sass, SWC, Terser and Lightning CSS, running in the site's own Node engines through Alethic.Node.</Description>
+        <PackageTags>aspnet;bundling;minification;rollup;sass;typescript;webforms</PackageTags>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Reference Include="System.Web" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Alethic.Node.AspNet" Version="1.0.0-pre.37" />
+        <PackageReference Include="Microsoft.AspNet.Web.Optimization" Version="1.1.3" />
+        <PackageReference Include="System.Text.Json" Version="10.0.12" />
+    </ItemGroup>
+
+    <!--
+        The toolchain: an npm project under toolchain\ that Rollup builds into one CommonJS file, with the WebAssembly
+        binaries its tools read from beside it. It is copied to a folder of its own in the consumer's output, by this
+        project's build and by the package's build targets alike.
+    -->
+    <PropertyGroup>
+        <ToolchainDir>$(MSBuildThisFileDirectory)toolchain\</ToolchainDir>
+        <ToolchainDistDir>$(ToolchainDir)dist\</ToolchainDistDir>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ToolchainInput Include="$(ToolchainDir)src\**\*.js;$(ToolchainDir)package.json;$(ToolchainDir)package-lock.json;$(ToolchainDir)rollup.config.js" />
+        <None Remove="toolchain\**" />
+        <Compile Remove="toolchain\**" />
+    </ItemGroup>
+
+    <Target Name="BuildToolchain" BeforeTargets="AssignTargetPaths" Inputs="@(ToolchainInput)" Outputs="$(ToolchainDistDir)toolchain.cjs">
+        <Exec Command="npm ci --no-audit --no-fund" WorkingDirectory="$(ToolchainDir)" Condition=" !Exists('$(ToolchainDir)node_modules') " />
+        <Exec Command="npx rollup -c --silent" WorkingDirectory="$(ToolchainDir)" />
+        <Touch Files="$(ToolchainDistDir)toolchain.cjs" />
+    </Target>
+
+    <Target Name="IncludeToolchain" AfterTargets="BuildToolchain" BeforeTargets="AssignTargetPaths">
+        <ItemGroup>
+            <ToolchainFile Include="$(ToolchainDistDir)*" />
+            <None Include="@(ToolchainFile)" Link="alethic.aspnet.optimization\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="build\alethic.aspnet.optimization\%(Filename)%(Extension)" />
+        </ItemGroup>
+    </Target>
+
+    <ItemGroup>
+        <None Include="build\Alethic.AspNet.Optimization.targets" Pack="true" PackagePath="build\;buildTransitive\" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,126 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+
+using Alethic.Node;
+
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.JavaScript.NodeApi;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace Alethic.AspNet.Optimization.Tests;
+
+/// <summary>
+/// Builds real bundles through the real toolchain on a real Node engine, and runs what comes out.
+/// </summary>
+[TestClass]
+public class ToolchainTests
+{
+
+    static NodeEnginePool? _pool;
+    static Toolchain? _toolchain;
+
+    /// <summary>
+    /// Starts one engine for the class, and the toolchain from the test's output.
+    /// </summary>
+    /// <param name="context"></param>
+    [ClassInitialize]
+    public static void Initialize(TestContext context)
+    {
+        _pool = new NodeEnginePool(new NodeEnginePoolOptions() { EngineCount = 1 }, NullLoggerFactory.Instance, EmptyServices.Instance);
+        _toolchain = new Toolchain(_pool, NodeModuleSource.FromFile(Path.Combine(AppContext.BaseDirectory, "alethic.aspnet.optimization", "toolchain.cjs")));
+    }
+
+    /// <summary>
+    /// Stops the engine.
+    /// </summary>
+    [ClassCleanup]
+    public static async Task Cleanup()
+    {
+        if (_pool is not null)
+            await _pool.DisposeAsync();
+    }
+
+    /// <summary>
+    /// Returns the absolute path of a fixture.
+    /// </summary>
+    /// <param name="path">The fixture's path below <c>Fixtures</c>.</param>
+    static string Fixture(string path) => Path.Combine(AppContext.BaseDirectory, "Fixtures", path.Replace('/', Path.DirectorySeparatorChar));
+
+    /// <summary>
+    /// Runs a script in a fresh context on the engine and returns a global it left, as a string.
+    /// </summary>
+    /// <param name="code">The script.</param>
+    /// <param name="name">The global to read.</param>
+    static Task<string> RunAndRead(string code, string name) => _pool!.RunAsync(() =>
+    {
+        var vm = JSValue.Global["require"].Call(JSValue.Undefined, "node:vm");
+        var context = vm.CallMethod("createContext", new JSObject());
+        vm.CallMethod("runInContext", code, context);
+        return Task.FromResult((string)context[name].CoerceToString());
+    });
+
+    [TestMethod]
+    [DataRow(false)]
+    [DataRow(true)]
+    public async Task Classic_scripts_share_one_global_scope(bool minify)
+    {
+        var result = await _toolchain!.BuildAsync(new ToolchainRequest(BundleKind.Script, [Fixture("classic/first.js"), Fixture("classic/second.ts")], "classic.js") { Minify = minify });
+
+        // second.ts calls a function and reads a variable first.js declared at its top level, and its own top-level
+        // `this` is the global object, as it is for a script
+        Assert.AreEqual("HELLO!", await RunAndRead(result.Code, "shouted"));
+        Assert.AreEqual("hello", await RunAndRead(result.Code, "greeting"));
+    }
+
+    [TestMethod]
+    public async Task Classic_scripts_map_back_to_their_files()
+    {
+        var result = await _toolchain!.BuildAsync(new ToolchainRequest(BundleKind.Script, [Fixture("classic/first.js"), Fixture("classic/second.ts")], "classic.js") { Minify = true, SourceMap = true });
+
+        Assert.IsNotNull(result.Map);
+        StringAssert.Contains(result.Map, "first.js");
+        StringAssert.Contains(result.Map, "second.ts");
+        CollectionAssert.IsSubsetOf(new[] { Fixture("classic/first.js"), Fixture("classic/second.ts") }, result.WatchFiles.ToArray());
+    }
+
+    [TestMethod]
+    public async Task Modules_are_bundled_without_leaking_their_names()
+    {
+        var result = await _toolchain!.BuildAsync(new ToolchainRequest(BundleKind.Module, [Fixture("modules/main.js")], "main.js") { Minify = true });
+
+        Assert.AreEqual("42", await RunAndRead(result.Code, "answer"));
+        Assert.AreEqual("undefined", await RunAndRead(result.Code, "local"));
+        Assert.IsFalse(result.Code.Contains("unused"), "tree-shaking removes what nothing imports");
+    }
+
+    [TestMethod]
+    public async Task Sass_compiles_and_reports_its_partials()
+    {
+        var result = await _toolchain!.BuildAsync(new ToolchainRequest(BundleKind.Style, [Fixture("styles/site.scss")], "site.css") { Minify = true, SourceMap = true });
+
+        StringAssert.Contains(result.Code, ".banner .title{font-weight:700}");
+        StringAssert.Contains(result.Code, "#369");
+        CollectionAssert.Contains(result.WatchFiles.ToArray(), Fixture("styles/_palette.scss"));
+        Assert.IsNotNull(result.Map);
+        StringAssert.Contains(result.Map, "site.scss");
+    }
+
+    [TestMethod]
+    public async Task A_syntax_error_fails_the_build()
+    {
+        var broken = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".js");
+        File.WriteAllText(broken, "var = ;");
+
+        try
+        {
+            await Assert.ThrowsExactlyAsync<JSException>(() => _toolchain!.BuildAsync(new ToolchainRequest(BundleKind.Script, [broken], "broken.js")));
+        }
+        finally
+        {
+            File.Delete(broken);
+        }
+    }
+
+}
