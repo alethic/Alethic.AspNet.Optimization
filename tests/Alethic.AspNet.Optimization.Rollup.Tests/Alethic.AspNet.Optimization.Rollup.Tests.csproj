@@ -11,7 +11,7 @@
     <ItemGroup>
         <!-- carries the VSTest testhost that CI's `dotnet test <dll>` runs -->
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
-        <PackageReference Include="Microsoft.JavaScript.LibNode.win-x64" Version="20.1800.203" />
+        <PackageReference Include="Microsoft.JavaScript.LibNode.win-x64" Version="20.1800.215" />
     </ItemGroup>
 
     <ItemGroup>
