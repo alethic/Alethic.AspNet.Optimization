@@ -67,8 +67,9 @@ minified, and carries no source map, where optimizations are enabled, and the re
 
 - .NET Framework 4.8, 64-bit.
 - libnode: reference `Microsoft.JavaScript.LibNode.win-x64` from the web project.
-- The application's Node engines come from `Alethic.Node.AspNet`, whose `alethic.node` section in `web.config`
-  configures them.
+- The application's Node engines come from `Alethic.Node.AspNet`: the `NodeEnginePool` the site's
+  `HttpRuntime.WebObjectActivator` supplies, where it supplies one, and otherwise a default pool configured by the
+  `alethic.node` section of `web.config`. Bundles are built on whichever it is at the time.
 - Node starts once per process, and ASP.NET restarts an application in a new AppDomain of the same process. Keep it
   from doing so, for example with `<httpRuntime fcnMode="Disabled" />`, and recycle the application pool instead. See
   Alethic.Node.AspNet.

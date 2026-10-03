@@ -110,7 +110,7 @@ sealed class RollupBundleBuilder : IBundleBuilder
         };
 
         // off the request's thread, whose synchronization context the build's continuations must not wait for
-        var result = Task.Run(() => Toolchain.Default.BuildAsync(request)).GetAwaiter().GetResult();
+        var result = Task.Run(() => Toolchain.ForApplication().BuildAsync(request)).GetAwaiter().GetResult();
         _results.Remove(context);
         _results.Add(context, result);
 

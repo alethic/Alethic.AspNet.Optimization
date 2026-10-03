@@ -17,12 +17,12 @@ namespace Alethic.AspNet.Optimization.Rollup;
 sealed class Toolchain
 {
 
-    static readonly Lazy<Toolchain> _default = new(() => new Toolchain(AspNetNode.Pool, EmbeddedToolchainSource.Instance));
-
     /// <summary>
-    /// The application's toolchain: the one embedded in this assembly, on the application's pool of engines.
+    /// Returns the application's toolchain: the one embedded in this assembly, on the application's pool of engines as
+    /// it is now, which is the one the site's <see cref="System.Web.HttpRuntime.WebObjectActivator"/> supplies where it
+    /// supplies one.
     /// </summary>
-    public static Toolchain Default => _default.Value;
+    public static Toolchain ForApplication() => new(AspNetNode.Pool, EmbeddedToolchainSource.Instance);
 
     readonly NodeEnginePool _pool;
     readonly NodeModuleSource _module;
