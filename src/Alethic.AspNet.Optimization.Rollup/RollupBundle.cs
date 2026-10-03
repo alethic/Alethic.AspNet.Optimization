@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Web;
 using System.Web.Optimization;
 
 namespace Alethic.AspNet.Optimization.Rollup;
@@ -86,10 +85,6 @@ public abstract class RollupBundle : Bundle
         {
             ContentType = Kind == BundleKind.Style ? "text/css" : "text/javascript",
         };
-
-        // a bundle served for debugging changes with every edit, so no browser keeps it
-        if (context.EnableOptimizations == false)
-            response.Cacheability = HttpCacheability.NoCache;
 
         foreach (var transform in Transforms)
             transform.Process(context, response);
