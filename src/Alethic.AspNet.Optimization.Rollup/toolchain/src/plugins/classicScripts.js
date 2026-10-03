@@ -11,8 +11,9 @@ const entryId = 'alethic:classic-scripts';
  * do, where modules importing each other would each get their own and have clashing names renamed apart.
  *
  * @param {string[]} inputs absolute paths of the scripts, in order
+ * @param {string} separator what the scripts are joined with, ending with a line break
  */
-export function classicScripts(inputs) {
+export function classicScripts(inputs, separator) {
     const inputSet = new Set(inputs);
     const maps = new Map();
 
@@ -33,8 +34,7 @@ export function classicScripts(inputs) {
                 parts.push({ code: info.code, map: maps.get(input), source: input });
             }
 
-            // the semicolon ends a final statement a script left open, as concatenating scripts always has
-            return concat(parts, ';\n');
+            return concat(parts, separator);
         },
 
         transform: {

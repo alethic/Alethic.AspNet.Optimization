@@ -69,6 +69,7 @@ sealed class Toolchain
                 ["fileName"] = request.FileName,
                 ["minify"] = request.Minify,
                 ["sourceMap"] = request.SourceMap,
+                ["separator"] = request.Separator,
                 ["files"] = new JSObject
                 {
                     ["exists"] = new JSFunction(path => request.Files.Exists((string)path)),

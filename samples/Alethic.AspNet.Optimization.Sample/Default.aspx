@@ -14,7 +14,7 @@
             <strong><%: BundleTable.EnableOptimizations ? "enabled" : "disabled" %></strong>:
             <%: BundleTable.EnableOptimizations
                 ? "bundles are minified and rendered as one versioned URL each."
-                : "bundles are rendered as themselves, unminified, with an inline source map. Open the browser's tools to see each file as written." %>
+                : "bundles are rendered as their files, as System.Web.Optimization renders any bundle. TypeScript and Sass files cannot yet be served on their own, so those panels stay yellow." %>
         </p>
 
         <section class="panel" id="style">

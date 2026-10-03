@@ -21,12 +21,13 @@ import { typescript } from './plugins/typescript.js';
  * @param {string} request.fileName the output's file name, which names the output in its source map
  * @param {boolean} request.minify whether to minify the output
  * @param {boolean} request.sourceMap whether to produce a source map
+ * @param {string} [request.separator] what classic scripts are joined with, ending with a line break
  * @param {{ exists(path: string): boolean, read(path: string): string | null }} request.files the host's files, through
  *     which every file is found and read, named by absolute path
  * @returns {Promise<{ code: string, map: string | null, watchFiles: string[], warnings: string[] }>}
  */
 export async function build(request) {
-    const { kind, inputs, fileName, minify = false, sourceMap = false, files } = request;
+    const { kind, inputs, fileName, minify = false, sourceMap = false, files, separator = ';\n' } = request;
     const warnings = [];
 
     if ((kind === 'module' || kind === 'style') && inputs.length !== 1)
@@ -34,7 +35,7 @@ export async function build(request) {
 
     const plugins = [hostFiles(files), typescript()];
     if (kind === 'script')
-        plugins.push(classicScripts(inputs));
+        plugins.push(classicScripts(inputs, separator));
     else if (kind === 'style')
         plugins.push(styles(inputs[0], files, { fileName, minify, sourceMap, warnings }));
     else if (kind !== 'module')

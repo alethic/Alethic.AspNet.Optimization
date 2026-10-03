@@ -43,6 +43,17 @@ sealed class RollupBundleBuilder : IBundleBuilder
     }
 
     /// <summary>
+    /// Returns what the bundle's classic scripts are joined with: its <see cref="Bundle.ConcatenationToken"/>, or a
+    /// line break where it has none, as System.Web.Optimization joins files, ending with a line break either way.
+    /// </summary>
+    /// <param name="bundle">The bundle.</param>
+    static string Separator(Bundle bundle)
+    {
+        var token = string.IsNullOrEmpty(bundle.ConcatenationToken) ? "\n" : bundle.ConcatenationToken.Replace("\r\n", "\n");
+        return token.EndsWith("\n", StringComparison.Ordinal) ? token : token + "\n";
+    }
+
+    /// <summary>
     /// Appends a source map to the code, inline, its sources made into the URLs the browser loads them from.
     /// </summary>
     /// <param name="kind">The bundle's kind, which says how it writes a comment.</param>
@@ -93,6 +104,7 @@ sealed class RollupBundleBuilder : IBundleBuilder
         {
             Minify = minify,
             SourceMap = sourceMap,
+            Separator = Separator(rollup),
         };
 
         // off the request's thread, whose synchronization context the build's continuations must not wait for

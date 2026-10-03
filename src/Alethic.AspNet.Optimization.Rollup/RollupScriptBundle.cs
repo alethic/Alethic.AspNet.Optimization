@@ -1,3 +1,5 @@
+using System;
+
 namespace Alethic.AspNet.Optimization.Rollup;
 
 /// <summary>
@@ -15,7 +17,7 @@ public class RollupScriptBundle : RollupBundle
     public RollupScriptBundle(string virtualPath) :
         base(virtualPath)
     {
-
+        ConcatenationToken = ";" + Environment.NewLine;
     }
 
     /// <inheritdoc />

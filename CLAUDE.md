@@ -23,8 +23,10 @@ Terser and Lightning CSS) on Node engines embedded in the process through Alethi
     Rollup build, minification included; `RollupBundle.ApplyTransforms` makes the response, its files being every file
     the build read, then runs whatever transforms the site added. `Transforms` is empty by default. Files are read
     through `BundleToolchainFiles`: included files from their `BundleFile`, item transforms applied, everything else
-    from `BundleTable.VirtualPathProvider`. `RollupBundleResolver` renders a bundle as itself where optimizations are
-    off.
+    from `BundleTable.VirtualPathProvider`. `response.Files` stays the included files, as System.Web.Optimization
+    uses it to render a bundle where optimizations are off; every file the build read is kept on the
+    `RollupBundleResponse`, whose `CacheLookup` check by `VirtualPathProvider.GetFileHash` needs no file change
+    notifications, which Node's `fcnMode="Disabled"` turns off.
 - `tests/Alethic.AspNet.Optimization.Rollup.Tests` - MSTest, `net48`, x64. Builds fixtures through the real toolchain on a
   real libnode engine and runs the output.
 - `samples/Alethic.AspNet.Optimization.Sample` - a Web Forms site with one bundle of each kind, served by IIS Express.

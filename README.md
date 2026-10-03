@@ -37,9 +37,14 @@ public static void RegisterBundles(BundleCollection bundles)
   top-level `var` or `function` in one file is a global the next can use, exactly as when the files are joined as text.
 - **Dependencies invalidate the cache.** The bundle's cache dependency is every file the build read: imported modules
   and Sass partials as well as the files the bundle names.
-- **Debugging shows the source.** Where optimizations are disabled, a bundle is rendered as itself rather than as a tag
-  per file, unminified, with an inline source map. The browser's tools show each file as it was written, TypeScript
-  and Sass included.
+- **It is System.Web.Optimization underneath.** Rendering, versioned URLs, caching, ignore lists, `.min` swapping,
+  ordering, item transforms and CDN paths all work as for any bundle. A bundle's `Transforms` start empty, for the
+  site's own, which run on the built content.
+- **Source maps.** Set `SourceMap = true`, or leave it to follow optimizations, to append an inline source map that
+  shows the browser's tools each file as it was written, TypeScript and Sass included.
+
+Where optimizations are disabled, System.Web.Optimization renders a bundle as a tag per file. TypeScript and Sass files
+cannot yet be served on their own, so a bundle that includes them needs optimizations enabled.
 
 ## Requirements
 

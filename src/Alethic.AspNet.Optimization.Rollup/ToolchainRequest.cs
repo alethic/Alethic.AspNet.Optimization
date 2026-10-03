@@ -44,6 +44,11 @@ sealed class ToolchainRequest
     public ToolchainFiles Files { get; }
 
     /// <summary>
+    /// What classic scripts are joined with; it ends with a line break, so every script starts a line.
+    /// </summary>
+    public string Separator { get; set; } = ";\n";
+
+    /// <summary>
     /// Whether to minify the output.
     /// </summary>
     public bool Minify { get; set; }
